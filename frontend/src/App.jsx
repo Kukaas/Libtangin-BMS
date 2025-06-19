@@ -1,14 +1,16 @@
-import './App.css'
-import { Button } from './components/ui/button'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import VerifyEmail from './pages/VerifyEmail';
+import { Toaster } from 'sonner';
 
 function App() {
-
   return (
-    <div className='flex flex-col items-center justify-center h-screen'>
-      <h1 className='text-3xl font-bold underline'>Hello World</h1>
-      <Button onClick={() => alert('Button clicked')}>Click me</Button>
-    </div>
-  )
+    <Router>
+      <Routes>
+        <Route path="/verify-email" element={<VerifyEmail />} />
+      </Routes>
+      <Toaster position='top-right' richColors closeButton />
+    </Router>
+  );
 }
 
-export default App
+export default App;

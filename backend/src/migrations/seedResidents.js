@@ -1,8 +1,7 @@
-// backend/src/scripts/seedResidents.js
-
 import mongoose from "mongoose";
 import { ENV } from "../config/env.js";
 import Resident from "../models/residents.model.js";
+import User from "../models/user.model.js";
 
 const residents = [
     {
@@ -36,6 +35,7 @@ const seedResidents = async () => {
     try {
         await mongoose.connect(ENV.MONGO_URI);
         await Resident.deleteMany();
+        await User.deleteMany()
         await Resident.insertMany(residents);
         console.log("Residents seeded successfully!");
         process.exit();
