@@ -96,3 +96,84 @@ export const registerResident = async (req, res) => {
 };
 
 
+// @desc Login to the system
+// @route POST /api/auth/login
+// @access Public
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // 1. Validate input
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
+        }
+
+        // 2. Find user and populate resident data
+        const user = await User.findOne({ email }).select('+password');
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+        }
+
+        // 3. Check if email is verified
+        if (!user.isEmailVerified) {
+            return res.status(401).json({
+                success: false,
+                message: "Please verify your email before logging in"
+            });
+        }
+
+        // 4. Verify password
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+        }
+
+        // 5. Get resident data if user is a resident
+        let residentData = null;
+        if (user.role === "resident") {
+            residentData = await Resident.findOne({ userId: user._id });
+        }
+
+        // 6. Generate tokens
+        generateAccessToken(res, user._id);
+        generateRefreshToken(res, user._id);
+
+        // 7. Send response without password
+        res.status(200).json({
+            success: true,
+            message: "Login successful",
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                middleName: user.middleName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                isEmailVerified: user.isEmailVerified,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+                resident: residentData
+            }
+        });
+
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred during login. Please try again."
+        });
+    }
+};
+
+
