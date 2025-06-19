@@ -1,6 +1,7 @@
 import express from "express";
 import connectDB from "./config/db.js";
 import { ENV } from "./config/env.js";
+import authRoutes from "./routes/auth.routes.js"
 
 const app = express();
 
@@ -12,3 +13,8 @@ connectDB();
 app.listen(ENV.PORT, () => {
     console.log(`Server is running on port ${ENV.PORT}`);
 });
+
+// Routes
+app.use("/api/auth", authRoutes);
+
+export default app;
