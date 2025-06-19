@@ -177,3 +177,35 @@ export const login = async (req, res) => {
 };
 
 
+// @desc Logout of the system
+// @route POST /api/auth/logout
+// @access Private
+export const logout = async (req, res) => {
+    try {
+        // Clear cookies
+        res.cookie('accessToken', '', {
+            httpOnly: true,
+            expires: new Date(0),
+            secure: process.env.NODE_ENV !== "development",
+        });
+
+        res.cookie('refreshToken', '', {
+            httpOnly: true,
+            expires: new Date(0),
+            secure: process.env.NODE_ENV !== "development",
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Logged out successfully"
+        });
+    } catch (error) {
+        console.error("Logout error:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred during logout"
+        });
+    }
+};
+
+
