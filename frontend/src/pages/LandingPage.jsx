@@ -95,10 +95,12 @@ const LandingPage = () => {
                             Modern, efficient, and secure processing for all your needs.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button size="lg" className="px-8 py-3">
-                                Get Started
-                                <ArrowRight className="ml-2 w-4 h-4" />
-                            </Button>
+                            <Link to="/signup">
+                                <Button size="lg" className="px-8 py-3">
+                                    Get Started
+                                    <ArrowRight className="ml-2 w-4 h-4" />
+                                </Button>
+                            </Link>
                             <Button variant="outline" size="lg" className="px-8 py-3">
                                 Learn More
                             </Button>

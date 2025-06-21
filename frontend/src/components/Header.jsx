@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Shield, Menu, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Shield, Menu, X, User as UserIcon, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
+import { useAuth } from '../context/AuthContext';
 
 const navLinks = [
     { to: '/', label: 'Home' },
@@ -12,6 +13,8 @@ const navLinks = [
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const { user, isAuthenticated, logout } = useAuth();
+    const navigate = useNavigate();
 
     const toggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -19,6 +22,11 @@ const Header = () => {
 
     const closeMenu = () => {
         setMenuOpen(false);
+    };
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
     };
 
     return (
@@ -44,7 +52,28 @@ const Header = () => {
                                 {link.label}
                             </Link>
                         ))}
-                        <Button variant="outline" className="ml-4">Login</Button>
+                        <div className="flex items-center space-x-3 ml-4">
+                            {isAuthenticated ? (
+                                <>
+                                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 text-blue-900 font-medium">
+                                        <UserIcon className="w-5 h-5" />
+                                        <span>{user?.firstName || user?.email}</span>
+                                    </div>
+                                    <Button variant="outline" onClick={handleLogout}>
+                                        <LogOut className="w-4 h-4 mr-1" /> Logout
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/login">
+                                        <Button variant="outline">Login</Button>
+                                    </Link>
+                                    <Link to="/signup">
+                                        <Button>Sign Up</Button>
+                                    </Link>
+                                </>
+                            )}
+                        </div>
                     </nav>
 
                     {/* Mobile Menu Button */}
@@ -72,8 +101,27 @@ const Header = () => {
                                         {link.label}
                                     </Link>
                                 ))}
-                                <div className="pt-2">
-                                    <Button variant="outline" className="w-full">Login</Button>
+                                <div className="pt-2 space-y-2">
+                                    {isAuthenticated ? (
+                                        <>
+                                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 text-blue-900 font-medium">
+                                                <UserIcon className="w-5 h-5" />
+                                                <span>{user?.firstName || user?.email}</span>
+                                            </div>
+                                            <Button variant="outline" className="w-full" onClick={() => { handleLogout(); closeMenu(); }}>
+                                                <LogOut className="w-4 h-4 mr-1" /> Logout
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link to="/login" onClick={closeMenu}>
+                                                <Button variant="outline" className="w-full">Login</Button>
+                                            </Link>
+                                            <Link to="/signup" onClick={closeMenu}>
+                                                <Button className="w-full">Sign Up</Button>
+                                            </Link>
+                                        </>
+                                    )}
                                 </div>
                             </nav>
                         </div>

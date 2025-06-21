@@ -14,28 +14,40 @@ import {
 // @access Public
 export const registerResident = async (req, res) => {
     try {
-        const { firstName, middleName, lastName, birthDate, email, password } = req.body;
+        const { residentId, email, password } = req.body;
 
-        // 1. Find resident by name and birthDate
-        const resident = await Resident.findOne({
-            firstName,
-            lastName,
-            birthDate: new Date(birthDate),
-        });
+        if (!residentId || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Resident ID, email, and password are required"
+            });
+        }
+
+        // 1. Find resident by ID
+        const resident = await Resident.findById(residentId);
 
         if (!resident) {
-            return res.status(404).json({ message: "Resident not found. Please contact barangay staff." });
+            return res.status(404).json({
+                success: false,
+                message: "Resident not found. Please contact barangay staff."
+            });
         }
 
         // 2. Check if resident already has a user
         if (resident.userId) {
-            return res.status(400).json({ message: "Resident already has an account." });
+            return res.status(400).json({
+                success: false,
+                message: "Resident already has an account."
+            });
         }
 
         // 3. Check if email is already used
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: "Email already in use." });
+            return res.status(400).json({
+                success: false,
+                message: "Email already in use."
+            });
         }
 
         // 4. Create user
@@ -48,9 +60,9 @@ export const registerResident = async (req, res) => {
         const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
         const user = await User.create({
-            firstName,
-            middleName,
-            lastName,
+            firstName: resident.firstName,
+            middleName: resident.middleName,
+            lastName: resident.lastName,
             email,
             password: hashedPassword,
             role: "resident",
@@ -66,7 +78,7 @@ export const registerResident = async (req, res) => {
         // 6. Send verification email
         const emailResult = await sendVerificationEmail({
             email,
-            firstName,
+            firstName: resident.firstName,
             verificationToken: emailVerificationToken,
         });
 
@@ -80,18 +92,23 @@ export const registerResident = async (req, res) => {
         generateRefreshToken(res, user._id);
 
         res.status(201).json({
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            role: user.role,
-            residentId: resident._id,
-            emailVerificationToken,
+            success: true,
             message: "Registration successful! Please check your email to verify your account.",
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                residentId: resident._id,
+            }
         });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ message: "Registration failed." });
+        res.status(500).json({
+            success: false,
+            message: "Registration failed."
+        });
     }
 };
 
@@ -372,6 +389,104 @@ export const resetPassword = async (req, res) => {
             success: false,
             message: "An error occurred. Please try again."
         });
+    }
+};
+
+// @desc Search residents by name for signup
+// @route GET /api/auth/search-residents
+// @access Public
+export const searchResidents = async (req, res) => {
+    try {
+        const { firstName, lastName } = req.query;
+
+        if (!firstName && !lastName) {
+            return res.status(400).json({
+                success: false,
+                message: "At least first name or last name is required"
+            });
+        }
+
+        // Build search query
+        const searchQuery = {};
+        if (firstName) {
+            searchQuery.firstName = { $regex: firstName, $options: 'i' };
+        }
+        if (lastName) {
+            searchQuery.lastName = { $regex: lastName, $options: 'i' };
+        }
+
+        // Find residents that don't have a user account yet
+        searchQuery.userId = { $exists: false };
+
+        const residents = await Resident.find(searchQuery)
+            .select('firstName middleName lastName birthDate age gender purok civilStatus occupation contactNumber parents')
+            .limit(10);
+
+        res.status(200).json({
+            success: true,
+            data: residents
+        });
+
+    } catch (error) {
+        console.error("Search residents error:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while searching residents"
+        });
+    }
+};
+
+// @desc Get resident details by ID
+// @route GET /api/auth/resident/:id
+// @access Public
+export const getResidentById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const resident = await Resident.findById(id)
+            .select('firstName middleName lastName birthDate age gender purok civilStatus occupation contactNumber parents');
+
+        if (!resident) {
+            return res.status(404).json({
+                success: false,
+                message: "Resident not found"
+            });
+        }
+
+        // Check if resident already has a user account
+        if (resident.userId) {
+            return res.status(400).json({
+                success: false,
+                message: "This resident already has an account"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: resident
+        });
+
+    } catch (error) {
+        console.error("Get resident error:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching resident details"
+        });
+    }
+};
+
+// @desc Get current authenticated user
+// @route GET /api/auth/me
+// @access Private
+export const getMe = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        res.status(200).json({ success: true, user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch user' });
     }
 };
 
