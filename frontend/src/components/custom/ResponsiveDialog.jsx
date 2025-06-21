@@ -33,7 +33,7 @@ const ResponsiveDialog = React.forwardRef(({
             <DialogContent
                 ref={ref}
                 className={cn(
-                    "w-[95vw] max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl",
+                    "w-[95vw] sm:max-w-[425px]",
                     "max-h-[90vh] overflow-y-auto",
                     contentClassName
                 )}
@@ -43,7 +43,6 @@ const ResponsiveDialog = React.forwardRef(({
                     <DialogHeader className={cn("text-center", headerClassName)}>
                         {title && (
                             <DialogTitle className={cn(
-                                "text-xl font-bold text-slate-900",
                                 titleClassName
                             )}>
                                 {title}
@@ -51,7 +50,6 @@ const ResponsiveDialog = React.forwardRef(({
                         )}
                         {description && (
                             <DialogDescription className={cn(
-                                "text-slate-600 mt-2",
                                 descriptionClassName
                             )}>
                                 {description}

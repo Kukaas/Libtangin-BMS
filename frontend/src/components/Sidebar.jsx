@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Shield, Home, User as UserIcon, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import ConfirmationDialog from './custom/ConfirmDialog';
 
 const sidebarLinks = [
     { to: '/dashboard', label: 'Dashboard', icon: Home },
@@ -11,6 +12,23 @@ const sidebarLinks = [
 const Sidebar = ({ onLogout }) => {
     const location = useLocation();
     const { user, isAuthenticated } = useAuth();
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const [logoutLoading, setLogoutLoading] = useState(false);
+
+    const handleLogoutClick = () => setShowLogoutDialog(true);
+    const handleConfirmLogout = async () => {
+        setLogoutLoading(true);
+        try {
+            if (onLogout) await onLogout();
+        } finally {
+            setLogoutLoading(false);
+            setShowLogoutDialog(false);
+        }
+    };
+    const handleCancelLogout = () => {
+        setShowLogoutDialog(false);
+        setLogoutLoading(false);
+    };
 
     return (
         <div className="flex flex-col h-full bg-white shadow-lg border-r border-slate-200 w-68">
@@ -44,13 +62,23 @@ const Sidebar = ({ onLogout }) => {
                 </div>
             )}
             {onLogout && (
-                <button
-                    onClick={onLogout}
-                    className="flex items-center gap-3 px-6 py-3 text-red-600 hover:bg-red-50 border-t border-slate-100 w-full font-medium"
-                >
-                    <LogOut className="w-5 h-5" />
-                    Logout
-                </button>
+                <>
+                    <button
+                        onClick={handleLogoutClick}
+                        className="flex items-center gap-3 px-6 py-3 text-red-600 hover:bg-red-50 border-t border-slate-100 w-full font-medium"
+                    >
+                        <LogOut className="w-5 h-5" />
+                        Logout
+                    </button>
+                    <ConfirmationDialog
+                        open={showLogoutDialog}
+                        onConfirm={handleConfirmLogout}
+                        onCancel={handleCancelLogout}
+                        confirmColor='destructive'
+                        title='Are you sure you want to logout?'
+                        loading={logoutLoading}
+                    />
+                </>
             )}
         </div>
     );
