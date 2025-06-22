@@ -235,69 +235,47 @@ const Signup = () => {
                                 icon={Mail}
                             />
 
-                            {/* Password field with custom visibility toggle */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-slate-700">
-                                    Password
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        id="password"
-                                        placeholder="Create a strong password"
-                                        value={formData.password}
-                                        onChange={handleInputChange}
-                                        className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-slate-300'
-                                            }`}
-                                    />
+                            <FormInput
+                                label="Password"
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                id="password"
+                                placeholder="Create a strong password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                error={errors.password}
+                                icon={Lock}
+                                endIcon={
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                        className="text-slate-400 hover:text-slate-600"
                                     >
                                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
-                                </div>
-                                {errors.password && (
-                                    <p className="text-sm text-red-600 flex items-center gap-1">
-                                        <span className="w-1 h-1 bg-red-600 rounded-full"></span>
-                                        {errors.password}
-                                    </p>
-                                )}
-                            </div>
+                                }
+                            />
 
-                            {/* Confirm Password field with custom visibility toggle */}
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-slate-700">
-                                    Confirm Password
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        name="confirmPassword"
-                                        id="confirmPassword"
-                                        placeholder="Confirm your password"
-                                        value={formData.confirmPassword}
-                                        onChange={handleInputChange}
-                                        className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-slate-300'
-                                            }`}
-                                    />
+                            <FormInput
+                                label="Confirm Password"
+                                type={showConfirmPassword ? "text" : "password"}
+                                name="confirmPassword"
+                                id="confirmPassword"
+                                placeholder="Confirm your password"
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
+                                error={errors.confirmPassword}
+                                icon={Lock}
+                                endIcon={
                                     <button
                                         type="button"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                        className="text-slate-400 hover:text-slate-600"
                                     >
                                         {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
-                                </div>
-                                {errors.confirmPassword && (
-                                    <p className="text-sm text-red-600 flex items-center gap-1">
-                                        <span className="w-1 h-1 bg-red-600 rounded-full"></span>
-                                        {errors.confirmPassword}
-                                    </p>
-                                )}
-                            </div>
+                                }
+                            />
                             <div className="p-4 bg-blue-50 rounded-lg mb-4">
                                 <h4 className="text-sm font-medium text-blue-900 mb-2">Password Requirements:</h4>
                                 <ul className="text-xs text-blue-700 space-y-1">
