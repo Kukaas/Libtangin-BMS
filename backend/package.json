@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "seed:residents": "node src/migrations/seedResidents.js"
+    "seed:residents": "node src/migrations/seedResidents.js",
+    "seed:admin": "node src/migrations/seedAdmin.js",
+    "seed:all": "node src/migrations/seedAll.js"
   },
   "keywords": [],
   "author": "",
