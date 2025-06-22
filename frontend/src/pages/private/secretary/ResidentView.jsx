@@ -72,10 +72,10 @@ function ResidentView() {
                     {/* Parents Information */}
                     <Section title="Parents Information">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <Detail label="Father's Name" value={resident.parents?.father?.name} />
+                            <Detail label="Father's Name" value={resident.parents?.father?.name} deceased={resident.parents?.father?.deceased} />
                             <Detail label="Father's Occupation" value={resident.parents?.father?.occupation} />
                             <Detail label="Father's Contact" value={resident.parents?.father?.contactNumber} />
-                            <Detail label="Mother's Name" value={resident.parents?.mother?.name} />
+                            <Detail label="Mother's Name" value={resident.parents?.mother?.name} deceased={resident.parents?.mother?.deceased} />
                             <Detail label="Mother's Occupation" value={resident.parents?.mother?.occupation} />
                             <Detail label="Mother's Contact" value={resident.parents?.mother?.contactNumber} />
                         </div>
@@ -107,11 +107,16 @@ function Section({ title, children }) {
     );
 }
 
-function Detail({ label, value }) {
+function Detail({ label, value, deceased }) {
     return (
         <div className="flex flex-col gap-1 py-1 w-full">
             <span className="text-xs text-muted-foreground font-medium mb-0.5 tracking-wide">{label}</span>
-            <span className="text-base font-normal text-foreground/90 break-all">{value || <span className="text-muted-foreground">—</span>}</span>
+            <span className="text-base font-normal text-foreground/90 break-all flex items-center gap-2">
+                {value ? value : <span className="text-muted-foreground">—</span>}
+                {deceased && (
+                    <span className="inline-block px-2 py-0.5 text-xs rounded bg-destructive/10 text-destructive border border-destructive/30 ml-2">Deceased</span>
+                )}
+            </span>
         </div>
     );
 }

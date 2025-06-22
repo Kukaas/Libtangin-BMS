@@ -22,11 +22,13 @@ const residents = [
                 name: "Esmilo L. Maligaso",
                 occupation: "Tricycle Driver",
                 contactNumber: "09181234567",
+                deceased: false
             },
             mother: {
                 name: "Dina Rachell A. Maligaso",
                 occupation: "Housewife",
                 contactNumber: "09191234567",
+                deceased: false
             },
         },
     },

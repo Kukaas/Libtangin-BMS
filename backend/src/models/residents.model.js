@@ -54,29 +54,37 @@ const residentSchema = new mongoose.Schema({
         father: {
             name: {
                 type: String,
-                required: true,
+                required: false,
             },
             occupation: {
                 type: String,
-                required: true,
+                required: false,
             },
             contactNumber: {
                 type: String,
-                required: true,
+                required: false,
+            },
+            deceased: {
+                type: Boolean,
+                default: false,
             },
         },
         mother: {
             name: {
                 type: String,
-                required: true,
+                required: false,
             },
             occupation: {
                 type: String,
-                required: true,
+                required: false,
             },
             contactNumber: {
                 type: String,
-                required: true,
+                required: false,
+            },
+            deceased: {
+                type: Boolean,
+                default: false,
             },
         },
     },

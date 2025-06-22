@@ -6,6 +6,7 @@ import { Form, FormInput, DatePicker, CustomSelect } from '@/components/custom';
 import { Button } from '@/components/ui/button';
 import { differenceInYears, isValid } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
 
 function ResidentsCreate() {
     const navigate = useNavigate();
@@ -146,12 +147,20 @@ function ResidentsCreate() {
                     <section>
                         <h2 className="text-lg font-semibold mb-4 text-primary">Parents Information</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <FormInput label="Father's Name" name="fatherName" value={resident.parents.father.name} onChange={e => handleParentChange('father', 'name', e.target.value)} required placeholder="Enter father's name" />
-                            <FormInput label="Father's Occupation" name="fatherOccupation" value={resident.parents.father.occupation} onChange={e => handleParentChange('father', 'occupation', e.target.value)} required placeholder="Enter father's occupation" />
-                            <FormInput label="Father's Contact" name="fatherContactNumber" value={resident.parents.father.contactNumber} onChange={e => handleParentChange('father', 'contactNumber', e.target.value)} required placeholder="Enter father's contact number" />
-                            <FormInput label="Mother's Name" name="motherName" value={resident.parents.mother.name} onChange={e => handleParentChange('mother', 'name', e.target.value)} required placeholder="Enter mother's name" />
-                            <FormInput label="Mother's Occupation" name="motherOccupation" value={resident.parents.mother.occupation} onChange={e => handleParentChange('mother', 'occupation', e.target.value)} required placeholder="Enter mother's occupation" />
-                            <FormInput label="Mother's Contact" name="motherContactNumber" value={resident.parents.mother.contactNumber} onChange={e => handleParentChange('mother', 'contactNumber', e.target.value)} required placeholder="Enter mother's contact number" />
+                            <FormInput label="Father's Name" name="fatherName" value={resident.parents.father.name} onChange={e => handleParentChange('father', 'name', e.target.value)} placeholder="Enter father's name (optional)" disabled={!!resident.parents.father.deceased} />
+                            <FormInput label="Father's Occupation" name="fatherOccupation" value={resident.parents.father.occupation} onChange={e => handleParentChange('father', 'occupation', e.target.value)} placeholder="Enter father's occupation (optional)" disabled={!!resident.parents.father.deceased} />
+                            <FormInput label="Father's Contact" name="fatherContactNumber" value={resident.parents.father.contactNumber} onChange={e => handleParentChange('father', 'contactNumber', e.target.value)} placeholder="Enter father's contact number (optional)" disabled={!!resident.parents.father.deceased} />
+                            <div className="flex items-center gap-2 mt-1">
+                                <Checkbox id="fatherDeceased" checked={!!resident.parents.father.deceased} onCheckedChange={checked => handleParentChange('father', 'deceased', checked)} />
+                                <label htmlFor="fatherDeceased" className="text-sm">Father Deceased</label>
+                            </div>
+                            <FormInput label="Mother's Name" name="motherName" value={resident.parents.mother.name} onChange={e => handleParentChange('mother', 'name', e.target.value)} placeholder="Enter mother's name (optional)" disabled={!!resident.parents.mother.deceased} />
+                            <FormInput label="Mother's Occupation" name="motherOccupation" value={resident.parents.mother.occupation} onChange={e => handleParentChange('mother', 'occupation', e.target.value)} placeholder="Enter mother's occupation (optional)" disabled={!!resident.parents.mother.deceased} />
+                            <FormInput label="Mother's Contact" name="motherContactNumber" value={resident.parents.mother.contactNumber} onChange={e => handleParentChange('mother', 'contactNumber', e.target.value)} placeholder="Enter mother's contact number (optional)" disabled={!!resident.parents.mother.deceased} />
+                            <div className="flex items-center gap-2 mt-1">
+                                <Checkbox id="motherDeceased" checked={!!resident.parents.mother.deceased} onCheckedChange={checked => handleParentChange('mother', 'deceased', checked)} />
+                                <label htmlFor="motherDeceased" className="text-sm">Mother Deceased</label>
+                            </div>
                         </div>
                     </section>
                     <div className="flex justify-end gap-2 mt-4">
