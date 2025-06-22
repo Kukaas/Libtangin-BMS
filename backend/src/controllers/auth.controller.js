@@ -266,7 +266,7 @@ export const verifyEmail = async (req, res) => {
     }
 };
 
-// @desc Forgot password - send reset code
+// @desc Forgot password - send reset link with OTP
 // @route POST /api/auth/forgot-password
 // @access Public
 export const forgotPassword = async (req, res) => {
@@ -294,19 +294,26 @@ export const forgotPassword = async (req, res) => {
         // Generate 6-digit reset code
         const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString("hex");
+
         // Set expiration to 10 minutes
         const resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
+        const resetTokenExpires = new Date(Date.now() + 10 * 60 * 1000);
 
-        // Save reset code to user
+        // Save reset code and token to user
         user.passwordResetCode = resetCode;
         user.passwordResetCodeExpires = resetCodeExpires;
+        user.passwordResetToken = resetToken;
+        user.passwordResetTokenExpires = resetTokenExpires;
         await user.save();
 
-        // Send reset email
+        // Send reset email with link and code
         const emailResult = await sendPasswordResetEmail({
             email: user.email,
             firstName: user.firstName,
             resetCode: resetCode,
+            resetToken: resetToken,
         });
 
         if (!emailResult.success) {
@@ -319,7 +326,7 @@ export const forgotPassword = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "A code has been sent to you email!"
+            message: "Password reset link sent to your email!"
         });
 
     } catch (error) {
@@ -331,17 +338,17 @@ export const forgotPassword = async (req, res) => {
     }
 };
 
-// @desc Reset password with code
+// @desc Reset password with token and code
 // @route POST /api/auth/reset-password
 // @access Public
 export const resetPassword = async (req, res) => {
     try {
-        const { email, resetCode, newPassword } = req.body;
+        const { email, resetCode, resetToken, newPassword } = req.body;
 
-        if (!email || !resetCode || !newPassword) {
+        if (!email || !resetCode || !resetToken || !newPassword) {
             return res.status(400).json({
                 success: false,
-                message: "Email, reset code, and new password are required"
+                message: "Email, reset code, reset token, and new password are required"
             });
         }
 
@@ -351,26 +358,30 @@ export const resetPassword = async (req, res) => {
         if (!user) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid email or reset code"
+                message: "Invalid email or reset credentials"
             });
         }
 
-        // Check if reset code matches and is not expired
+        // Check if reset code and token match and are not expired
         if (user.passwordResetCode !== resetCode ||
-            user.passwordResetCodeExpires < new Date()) {
+            user.passwordResetToken !== resetToken ||
+            user.passwordResetCodeExpires < new Date() ||
+            user.passwordResetTokenExpires < new Date()) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid or expired reset code"
+                message: "Invalid or expired reset credentials"
             });
         }
 
         // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update user password and clear reset code
+        // Update user password and clear reset credentials
         user.password = hashedPassword;
         user.passwordResetCode = undefined;
         user.passwordResetCodeExpires = undefined;
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpires = undefined;
         await user.save();
 
         res.status(200).json({
@@ -482,6 +493,47 @@ export const getMe = async (req, res) => {
         res.status(200).json({ success: true, user });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to fetch user' });
+    }
+};
+
+// @desc Verify reset token and get user email
+// @route GET /api/auth/verify-reset-token
+// @access Public
+export const verifyResetToken = async (req, res) => {
+    try {
+        const { token } = req.query;
+
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: "Reset token is required"
+            });
+        }
+
+        // Find user with matching token and token not expired
+        const user = await User.findOne({
+            passwordResetToken: token,
+            passwordResetTokenExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or expired reset token"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Reset token is valid",
+            email: user.email
+        });
+    } catch (error) {
+        console.error("Reset token verification error:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred during token verification"
+        });
     }
 };
 

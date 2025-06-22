@@ -22,6 +22,11 @@ export const authAPI = {
         return await api.post('/auth/forgot-password', { email });
     },
 
+    // Verify reset token
+    verifyResetToken: async (token) => {
+        return await api.get(`/auth/verify-reset-token?token=${token}`);
+    },
+
     // Reset password
     resetPassword: async (resetData) => {
         return await api.post('/auth/reset-password', resetData);

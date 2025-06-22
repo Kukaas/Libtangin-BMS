@@ -14,6 +14,7 @@ import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { toast } from 'sonner';
+import { authAPI } from '../services/api';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Login = () => {
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
     const [forgotPasswordError, setForgotPasswordError] = useState('');
+    const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
     const [showVerificationAlert, setShowVerificationAlert] = useState(
         location.state?.fromSignup || false
     );
@@ -107,12 +109,10 @@ const Login = () => {
             return;
         }
 
-        try {
-            // TODO: Implement forgot password API call
-            console.log('Forgot password for:', forgotPasswordEmail);
+        setIsForgotPasswordLoading(true);
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            await authAPI.forgotPassword(forgotPasswordEmail);
 
             setShowForgotPassword(false);
             setForgotPasswordEmail('');
@@ -121,7 +121,9 @@ const Login = () => {
             toast.success('Password reset link sent to your email');
         } catch (error) {
             console.error('Forgot password error:', error);
-            setForgotPasswordError('Failed to send reset link. Please try again.');
+            setForgotPasswordError(error.message || 'Failed to send reset link. Please try again.');
+        } finally {
+            setIsForgotPasswordLoading(false);
         }
     };
 
@@ -271,14 +273,23 @@ const Login = () => {
                             variant="outline"
                             onClick={() => setShowForgotPassword(false)}
                             className="flex-1"
+                            disabled={isForgotPasswordLoading}
                         >
                             Cancel
                         </Button>
                         <Button
                             type="submit"
                             className="flex-1 bg-blue-600 hover:bg-blue-700"
+                            disabled={isForgotPasswordLoading}
                         >
-                            Send Reset Link
+                            {isForgotPasswordLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Sending...
+                                </div>
+                            ) : (
+                                'Send Reset Link'
+                            )}
                         </Button>
                     </div>
                 </Form>

@@ -6,6 +6,7 @@ import {
     verifyEmail,
     forgotPassword,
     resetPassword,
+    verifyResetToken,
     searchResidents,
     getResidentById,
     getMe
@@ -23,6 +24,8 @@ router.post("/logout", protect, logout);
 router.get("/verify-email", verifyEmail);
 
 router.post("/forgot-password", forgotPassword);
+
+router.get("/verify-reset-token", verifyResetToken);
 
 router.post("/reset-password", resetPassword);
 

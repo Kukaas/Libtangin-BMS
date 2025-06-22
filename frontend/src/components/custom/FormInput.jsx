@@ -10,6 +10,8 @@ const FormInput = React.forwardRef(({
     labelClassName,
     inputClassName,
     errorClassName,
+    icon: Icon,
+    endIcon,
     ...props
 }, ref) => {
     return (
@@ -22,17 +24,31 @@ const FormInput = React.forwardRef(({
                     {label}
                 </Label>
             )}
-            <Input
-                ref={ref}
-                className={cn(
-                    "w-full border-slate-300 focus:border-blue-500 focus:ring-blue-500",
-                    error && "border-red-500 focus:border-red-500 focus:ring-red-500",
-                    inputClassName
+            <div className="relative">
+                {Icon && (
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+                        <Icon size={16} />
+                    </div>
                 )}
-                aria-invalid={error ? "true" : "false"}
-                aria-describedby={error ? `${props.id || props.name}-error` : undefined}
-                {...props}
-            />
+                <Input
+                    ref={ref}
+                    className={cn(
+                        "w-full border-slate-300 focus:border-blue-500 focus:ring-blue-500",
+                        Icon && "pl-10",
+                        endIcon && "pr-10",
+                        error && "border-red-500 focus:border-red-500 focus:ring-red-500",
+                        inputClassName
+                    )}
+                    aria-invalid={error ? "true" : "false"}
+                    aria-describedby={error ? `${props.id || props.name}-error` : undefined}
+                    {...props}
+                />
+                {endIcon && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        {endIcon}
+                    </div>
+                )}
+            </div>
             {error && (
                 <p
                     id={`${props.id || props.name}-error`}

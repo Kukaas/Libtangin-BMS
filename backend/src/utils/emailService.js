@@ -102,7 +102,7 @@ const createEmailTemplate = ({ firstName, verificationLink }) => `
 `;
 
 // Modern, minimalist email template for password reset
-const createPasswordResetTemplate = ({ firstName, resetCode }) => `
+const createPasswordResetTemplate = ({ firstName, resetCode, resetToken }) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -146,6 +146,16 @@ const createPasswordResetTemplate = ({ firstName, resetCode }) => `
             color: #22c55e;
             letter-spacing: 4px;
         }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #22c55e;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -166,7 +176,11 @@ const createPasswordResetTemplate = ({ firstName, resetCode }) => `
 
         <div class="reset-code">${resetCode}</div>
 
-        <p>This code will expire in 10 minutes. If you didn't request a password reset, you can safely ignore this email.</p>
+        <p style="text-align: center;">
+            <a href="${ENV.FRONTEND_URL}/reset-password?token=${resetToken}" class="button" style="color: #ffffff; text-decoration: none;">Reset Password</a>
+        </p>
+
+        <p>This code and link will expire in 10 minutes. If you didn't request a password reset, you can safely ignore this email.</p>
 
         <div class="footer">
             <p>© ${new Date().getFullYear()} Libtangin BMS. All rights reserved.</p>
@@ -207,7 +221,7 @@ export const sendVerificationEmail = async ({ email, firstName, verificationToke
 };
 
 // Send password reset email
-export const sendPasswordResetEmail = async ({ email, firstName, resetCode }) => {
+export const sendPasswordResetEmail = async ({ email, firstName, resetCode, resetToken }) => {
     try {
         // Check if email configuration is valid
         if (!ENV.EMAIL_USER || !ENV.EMAIL_APP_PASSWORD) {
@@ -218,7 +232,7 @@ export const sendPasswordResetEmail = async ({ email, firstName, resetCode }) =>
             from: `"Libtangin BMS" <${ENV.EMAIL_USER}>`,
             to: email,
             subject: "Reset Your Password",
-            html: createPasswordResetTemplate({ firstName, resetCode }),
+            html: createPasswordResetTemplate({ firstName, resetCode, resetToken }),
         };
 
         await transporter.sendMail(mailOptions);
