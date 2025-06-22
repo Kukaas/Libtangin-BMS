@@ -33,6 +33,10 @@ function Residents() {
         navigate(`/secretary/residents/${id}/edit`);
     };
 
+    const handleView = (id) => {
+        navigate(`/secretary/residents/${id}/view`);
+    };
+
     const columns = [
         { key: 'firstName', id: 'firstName', accessorKey: 'firstName', label: 'First Name', header: 'First Name' },
         { key: 'lastName', id: 'lastName', accessorKey: 'lastName', label: 'Last Name', header: 'Last Name' },
@@ -47,6 +51,10 @@ function Residents() {
             render: (_, row) => (
                 <CustomDropdown
                     actions={[{
+                        label: 'View Details',
+                        icon: MoreHorizontal,
+                        onClick: () => handleView(row._id),
+                    }, {
                         label: 'Edit',
                         icon: Pencil,
                         onClick: () => handleEdit(row._id),
@@ -87,6 +95,10 @@ function Residents() {
                                 <div className="flex items-center gap-2">
                                     <CustomDropdown
                                         actions={[{
+                                            label: 'View Details',
+                                            icon: MoreHorizontal,
+                                            onClick: () => handleView(resident._id),
+                                        }, {
                                             label: 'Edit',
                                             icon: Pencil,
                                             onClick: () => handleEdit(resident._id),
