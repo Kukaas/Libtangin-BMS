@@ -10,14 +10,15 @@ const MainLayout = ({ children }) => {
 
     return (
         <div className="min-h-screen flex bg-slate-50">
-            {/* Permanent sidebar on desktop only */}
-            <div className="hidden md:flex">
+            {/* Sidebar - Sticky on desktop */}
+            <div className="hidden lg:block">
                 <Sidebar onLogout={logout} />
             </div>
+
             {/* Main content area */}
             <div className="flex-1 flex flex-col min-h-screen">
-                {/* Mobile header: logo left, burger right */}
-                <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 shadow-sm">
+                {/* Mobile header */}
+                <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
                     <span className="text-xl font-bold text-slate-900 flex items-center gap-2">
                         <span>Libtangin BMS</span>
                     </span>
@@ -35,7 +36,9 @@ const MainLayout = ({ children }) => {
                         </SheetContent>
                     </Sheet>
                 </div>
-                <main className="flex-1 p-6 bg-gradient-to-br from-slate-50 to-blue-50">
+
+                {/* Main content - Scrollable */}
+                <main className="flex-1 p-4 lg:p-6 bg-gradient-to-br from-slate-50 to-blue-50 overflow-y-auto">
                     {children}
                 </main>
             </div>
