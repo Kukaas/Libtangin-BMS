@@ -61,24 +61,24 @@ const PageLayout = ({
         <MainLayout>
             <div className={`p-6 ${className}`}>
                 {/* Breadcrumbs & Header Container */}
-                <div className="sticky top-0 z-20 mb-6">
-                    <div className="pt-2 pb-4">
-                        {renderBreadcrumbs()}
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-6">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
-                                {subtitle && (
-                                    <p className="mt-1 text-gray-600">{subtitle}</p>
-                                )}
-                            </div>
-                            {actions && (
-                                <div className="flex items-center gap-2">
-                                    {actions}
-                                </div>
+                <div className="mb-6">
+                    {renderBreadcrumbs()}
+
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-6">
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
+                            {subtitle && (
+                                <p className="mt-1 text-gray-600">{subtitle}</p>
                             )}
                         </div>
+                        {actions && (
+                            <div className="flex items-center gap-2">
+                                {actions}
+                            </div>
+                        )}
                     </div>
                 </div>
+
                 {/* Page Content */}
                 <div>
                     {children}

@@ -13,6 +13,7 @@ import Dashboard from './pages/private/Dashboard';
 import Residents from './pages/private/secretary/Residents';
 import ResidentsEdit from './pages/private/secretary/ResidentsEdit';
 import ResidentView from './pages/private/secretary/ResidentView';
+import ResidentsCreate from './pages/private/secretary/ResidentsCreate';
 import { Toaster } from 'sonner';
 import "./App.css"
 
@@ -52,6 +53,11 @@ function App() {
           <Route path="/secretary/residents" element={
             <PrivateRoute>
               <Residents />
+            </PrivateRoute>
+          } />
+          <Route path="/secretary/residents/create" element={
+            <PrivateRoute>
+              <ResidentsCreate />
             </PrivateRoute>
           } />
           <Route path="/secretary/residents/:id/edit" element={

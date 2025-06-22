@@ -8,7 +8,7 @@ import StatusBadge from '@/components/custom/StatusBadge';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Plus, Download } from 'lucide-react';
 import { CustomDropdown } from '@/components/custom';
 import { Pencil } from 'lucide-react';
 
@@ -35,6 +35,15 @@ function Residents() {
 
     const handleView = (id) => {
         navigate(`/secretary/residents/${id}/view`);
+    };
+
+    const handleCreate = () => {
+        navigate('/secretary/residents/create');
+    };
+
+    const handleExport = () => {
+        // Placeholder for export logic
+        // You can implement CSV export or similar here
     };
 
     const columns = [
@@ -69,6 +78,16 @@ function Residents() {
             title="Residents"
             subtitle="Manage and view all residents."
             breadcrumbs={[{ label: 'Residents' }]}
+            actions={
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-3 w-full sm:w-auto">
+                    <Button onClick={handleExport} variant="outline" className="w-full sm:w-auto" type="button">
+                        <Download className="w-4 h-4 mr-2" /> Export
+                    </Button>
+                    <Button onClick={handleCreate} className="w-full sm:w-auto" type="button">
+                        <Plus className="w-4 h-4 mr-2" /> Create
+                    </Button>
+                </div>
+            }
         >
             {loading ? (
                 <div className="text-center py-10 text-muted-foreground">Loading residents...</div>

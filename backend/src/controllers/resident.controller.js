@@ -37,7 +37,7 @@ export const createResident = async (req, res) => {
         res.status(201).json(newResident);
     } catch (error) {
         console.error("Error in createResident controller: ", error.message);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(400).json({ error: error.message || "Failed to create resident" });
     }
 };
 
