@@ -51,19 +51,30 @@ export const residentAPI = {
         });
     },
 
-    // Get resident by ID
-    getResidentById: async (residentId) => {
-        return await api.get(`/auth/resident/${residentId}`);
-    },
     // Get all residents
     getResidents: async () => {
         return await api.get('/residents');
     },
+
+    // Get resident by ID
+    getResidentById: async (residentId) => {
+        return await api.get(`/residents/${residentId}`);
+    },
+
+    // Create a resident
+    createResident: async (data) => {
+        return await api.post('/residents', data);
+    },
+
+    // Update a resident
+    updateResident: async (residentId, data) => {
+        return await api.put(`/residents/${residentId}`, data);
+    },
+
     // Delete a resident
     deleteResident: async (residentId) => {
         return await api.delete(`/residents/${residentId}`);
     },
-    // NOTE: Add other resident functions (create, update) here as needed.
 };
 
 export default api;

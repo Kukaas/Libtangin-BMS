@@ -8,8 +8,7 @@ export const getAllResidents = async (req, res) => {
     try {
         const residents = await Resident.find({}).populate('userId', 'email').lean();
 
-        // The frontend expects specific field names and the status.
-        // This mapping ensures consistency.
+        // The frontend expects specific field names.
         const formattedResidents = residents.map(r => ({
             ...r,
             _id: r._id,
@@ -18,7 +17,6 @@ export const getAllResidents = async (req, res) => {
             email: r.userId?.email || 'N/A',
             phone: r.contactNumber,
             address: r.purok,
-            status: r.status || 'pending', // Ensure status is always present
             createdAt: r.createdAt
         }));
 
@@ -34,9 +32,6 @@ export const getAllResidents = async (req, res) => {
 // @access  Private (Secretary or Admin)
 export const createResident = async (req, res) => {
     try {
-        // Note: This is a simplified create.
-        // You might need more complex logic, like checking for an existing user
-        // or creating a user account alongside the resident profile.
         const newResident = new Resident(req.body);
         await newResident.save();
         res.status(201).json(newResident);
@@ -71,13 +66,46 @@ export const deleteResident = async (req, res) => {
         if (!deletedResident) {
             return res.status(404).json({ error: "Resident not found" });
         }
-        // Also consider if you need to delete the associated user account
-        // if (deletedResident.userId) {
-        //     await User.findByIdAndDelete(deletedResident.userId);
-        // }
         res.status(200).json({ message: "Resident deleted successfully" });
     } catch (error) {
         console.error("Error in deleteResident controller: ", error.message);
         res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// @desc    Get a resident by ID
+// @route   GET /api/residents/:id
+// @access  Private (Secretary or Admin)
+export const getResidentById = async (req, res) => {
+    try {
+        const resident = await Resident.findById(req.params.id).populate('userId', 'email').lean();
+        if (!resident) {
+            return res.status(404).json({ error: 'Resident not found' });
+        }
+        const formattedResident = {
+            ...resident,
+            _id: resident._id,
+            firstName: resident.firstName,
+            lastName: resident.lastName,
+            email: resident.userId?.email || 'N/A',
+            phone: resident.contactNumber,
+            address: resident.purok,
+            createdAt: resident.createdAt,
+            middleName: resident.middleName,
+            birthDate: resident.birthDate,
+            age: resident.age,
+            gender: resident.gender,
+            purok: resident.purok,
+            civilStatus: resident.civilStatus,
+            occupation: resident.occupation,
+            contactNumber: resident.contactNumber,
+            isVerified: resident.isVerified,
+            parents: resident.parents,
+            userId: resident.userId?._id || null
+        };
+        res.status(200).json(formattedResident);
+    } catch (error) {
+        console.error('Error in getResidentById controller: ', error.message);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };

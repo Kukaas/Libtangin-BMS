@@ -5,36 +5,19 @@ import { DataTable } from '@/components/custom';
 import ResponsiveCard from '@/components/custom/ResponsiveCard';
 import { formatDateLong, formatStatus } from '@/lib/utils';
 import StatusBadge from '@/components/custom/StatusBadge';
-
-const columns = [
-    { key: 'firstName', id: 'firstName', accessorKey: 'firstName', label: 'First Name', header: 'First Name' },
-    { key: 'lastName', id: 'lastName', accessorKey: 'lastName', label: 'Last Name', header: 'Last Name' },
-    { key: 'email', id: 'email', accessorKey: 'email', label: 'Email', header: 'Email' },
-    { key: 'phone', id: 'phone', accessorKey: 'phone', label: 'Phone', header: 'Phone' },
-    { key: 'address', id: 'address', accessorKey: 'address', label: 'Address', header: 'Address' },
-    {
-        key: 'status',
-        id: 'status',
-        accessorKey: 'status',
-        label: 'Status',
-        header: 'Status',
-        render: (value) => <StatusBadge status={formatStatus(value)} />,
-    },
-    {
-        key: 'createdAt',
-        id: 'createdAt',
-        accessorKey: 'createdAt',
-        label: 'Created At',
-        header: 'Created At',
-        render: (value) => formatDateLong(value),
-    },
-];
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { MoreHorizontal } from 'lucide-react';
+import { CustomDropdown } from '@/components/custom';
+import { Pencil } from 'lucide-react';
 
 function Residents() {
     const [residents, setResidents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [view, setView] = useState('table'); // 'table' or 'card'
+    const navigate = useNavigate();
 
     useEffect(() => {
         setLoading(true);
@@ -45,6 +28,33 @@ function Residents() {
             .catch(err => setError(err?.response?.data?.error || 'Failed to fetch residents'))
             .finally(() => setLoading(false));
     }, []);
+
+    const handleEdit = (id) => {
+        navigate(`/secretary/residents/${id}/edit`);
+    };
+
+    const columns = [
+        { key: 'firstName', id: 'firstName', accessorKey: 'firstName', label: 'First Name', header: 'First Name' },
+        { key: 'lastName', id: 'lastName', accessorKey: 'lastName', label: 'Last Name', header: 'Last Name' },
+        { key: 'email', id: 'email', accessorKey: 'email', label: 'Email', header: 'Email' },
+        { key: 'phone', id: 'phone', accessorKey: 'phone', label: 'Phone', header: 'Phone' },
+        { key: 'address', id: 'address', accessorKey: 'address', label: 'Address', header: 'Address' },
+        {
+            key: 'actions',
+            id: 'actions',
+            label: 'Actions',
+            header: 'Actions',
+            render: (_, row) => (
+                <CustomDropdown
+                    actions={[{
+                        label: 'Edit',
+                        icon: Pencil,
+                        onClick: () => handleEdit(row._id),
+                    }]}
+                />
+            ),
+        },
+    ];
 
     return (
         <PageLayout
@@ -74,8 +84,14 @@ function Residents() {
                                 <div>
                                     <span className="font-semibold">Address:</span> {resident.address}
                                 </div>
-                                <div>
-                                    <span className="font-semibold">Status:</span> <StatusBadge status={formatStatus(resident.status)} />
+                                <div className="flex items-center gap-2">
+                                    <CustomDropdown
+                                        actions={[{
+                                            label: 'Edit',
+                                            icon: Pencil,
+                                            onClick: () => handleEdit(resident._id),
+                                        }]}
+                                    />
                                 </div>
                                 <div>
                                     <span className="font-semibold">Created At:</span> {formatDateLong(resident.createdAt)}
