@@ -22,6 +22,7 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
           {/* Public routes - only for non-authenticated users */}
           <Route path="/login" element={
@@ -36,11 +37,6 @@ function App() {
           } />
 
           {/* Private routes - only for authenticated users */}
-          <Route path="/verify-email" element={
-            <PrivateRoute>
-              <VerifyEmail />
-            </PrivateRoute>
-          } />
           <Route path="/dashboard" element={
             <PrivateRoute>
               <Dashboard />

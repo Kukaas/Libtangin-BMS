@@ -8,6 +8,7 @@ import Form from '../components/custom/Form';
 import FormInput from '../components/custom/FormInput';
 import ResponsiveCard from '../components/custom/ResponsiveCard';
 import ResponsiveDialog from '../components/custom/ResponsiveDialog';
+import Alert from '../components/custom/Alert';
 import { loginSchema } from '../lib/validation';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
@@ -29,6 +30,9 @@ const Login = () => {
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
     const [forgotPasswordError, setForgotPasswordError] = useState('');
+    const [showVerificationAlert, setShowVerificationAlert] = useState(
+        location.state?.fromSignup || false
+    );
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -130,6 +134,18 @@ const Login = () => {
                         title="Welcome Back"
                         description="Sign in to your account to access barangay services"
                     >
+                        {/* Email Verification Alert */}
+                        {showVerificationAlert && (
+                            <Alert
+                                variant="info"
+                                title="Email Verification Required"
+                                className="mb-6"
+                                showCloseButton
+                                onClose={() => setShowVerificationAlert(false)}
+                            >
+                                Please check your email and click the verification link to activate your account before signing in.
+                            </Alert>
+                        )}
                         <Form onSubmit={handleSubmit}>
                             <div className="space-y-4">
                                 <FormInput

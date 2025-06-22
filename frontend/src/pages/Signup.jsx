@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Separator } from '../components/ui/separator';
@@ -20,6 +20,8 @@ const Signup = () => {
     const [residentOptions, setResidentOptions] = useState([]);
     const [residentSearchLoading, setResidentSearchLoading] = useState(false);
     const [selectedResident, setSelectedResident] = useState(null);
+    const [hasSearched, setHasSearched] = useState(false);
+    const [isUpdatingFromSelection, setIsUpdatingFromSelection] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -30,13 +32,30 @@ const Signup = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Debounced search effect
+    useEffect(() => {
+        // Don't search if we're updating from selection
+        if (isUpdatingFromSelection) {
+            setIsUpdatingFromSelection(false);
+            return;
+        }
+
+        const timeoutId = setTimeout(() => {
+            if (residentQuery.length >= 2) {
+                handleResidentSearch(residentQuery);
+            } else {
+                setResidentOptions([]);
+                setHasSearched(false);
+            }
+        }, 500); // 500ms delay
+
+        return () => clearTimeout(timeoutId);
+    }, [residentQuery]);
+
     // Resident search handler
     const handleResidentSearch = async (query) => {
-        setResidentQuery(query);
-        setResidentOptions([]);
-        setSelectedResident(null);
-        if (query.length < 2) return;
         setResidentSearchLoading(true);
+        setHasSearched(true);
         try {
             const res = await residentAPI.searchResidents({ firstName: query });
             setResidentOptions(res.data || []);
@@ -49,8 +68,10 @@ const Signup = () => {
 
     const handleResidentSelect = (resident) => {
         setSelectedResident(resident);
+        setIsUpdatingFromSelection(true); // Set flag before updating query
         setResidentQuery(`${resident.firstName} ${resident.lastName}`);
         setResidentOptions([]);
+        setHasSearched(false);
     };
 
     const handleInputChange = (e) => {
@@ -61,9 +82,13 @@ const Signup = () => {
         }
     };
 
+    const handleResidentQueryChange = (e) => {
+        setResidentQuery(e.target.value);
+        setSelectedResident(null);
+    };
+
     const validateForm = () => {
         const { email, password, confirmPassword } = formData;
-        console.log('Validating form data:', { email, password, confirmPassword });
 
         // Simple validation as fallback
         const simpleErrors = {};
@@ -73,31 +98,19 @@ const Signup = () => {
         if (password !== confirmPassword) simpleErrors.confirmPassword = "Passwords don't match";
 
         if (Object.keys(simpleErrors).length > 0) {
-            console.log('Simple validation failed:', simpleErrors);
             setErrors(simpleErrors);
             return false;
         }
 
         try {
-            console.log('Using schema:', signupSchema);
-            // Use the full schema instead of pick() since it has refinements
             signupSchema.parse({ email, password, confirmPassword });
             setErrors({});
             return true;
         } catch (error) {
-            console.log('Validation error:', error);
-            console.log('Error structure:', {
-                hasError: !!error,
-                hasErrors: !!(error && error.errors),
-                isArray: !!(error && error.errors && Array.isArray(error.errors)),
-                errorsLength: error && error.errors ? error.errors.length : 'N/A'
-            });
-
             const newErrors = {};
             // Check if error is a Zod error and has the errors property
             if (error && error.errors && Array.isArray(error.errors)) {
                 error.errors.forEach(err => {
-                    console.log('Processing error:', err);
                     if (err.path && err.path[0]) {
                         newErrors[err.path[0]] = err.message;
                     }
@@ -106,7 +119,6 @@ const Signup = () => {
                 // Fallback for other types of errors
                 newErrors.general = 'Validation failed. Please check your input.';
             }
-            console.log('Setting errors:', newErrors);
             setErrors(newErrors);
             return false;
         }
@@ -127,7 +139,7 @@ const Signup = () => {
                 password: formData.password,
             });
             toast.success("Please verify your email")
-            navigate('/login');
+            navigate('/login', { state: { fromSignup: true } });
         } catch (error) {
             setErrors({ email: error.message || 'Registration failed.' });
         } finally {
@@ -161,7 +173,7 @@ const Signup = () => {
                                         className={`w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.resident ? 'border-red-500 focus:ring-red-500' : 'border-slate-300'}`}
                                         placeholder="Type your first name..."
                                         value={residentQuery}
-                                        onChange={e => handleResidentSearch(e.target.value)}
+                                        onChange={handleResidentQueryChange}
                                         autoComplete="off"
                                     />
                                     {residentSearchLoading && (
@@ -183,6 +195,15 @@ const Signup = () => {
                                                 </li>
                                             ))}
                                         </ul>
+                                    )}
+                                    {hasSearched && !residentSearchLoading && residentOptions.length === 0 && residentQuery.length >= 2 && (
+                                        <div className="absolute z-10 left-0 right-0 bg-white border border-slate-200 rounded-lg mt-1 p-4 shadow-lg">
+                                            <div className="text-center text-slate-500">
+                                                <User className="w-8 h-8 mx-auto mb-2 text-slate-400" />
+                                                <p className="text-sm font-medium">No residents found</p>
+                                                <p className="text-xs">Try searching with a different name or contact barangay staff</p>
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                                 {errors.resident && <p className="text-sm text-red-600 mt-1">{errors.resident}</p>}

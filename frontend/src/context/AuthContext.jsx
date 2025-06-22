@@ -28,8 +28,6 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (registrationData) => {
         await authAPI.register(registrationData);
-        const data = await authAPI.me();
-        setUser(data.user);
     };
 
     return (

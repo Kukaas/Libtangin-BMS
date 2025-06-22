@@ -30,9 +30,12 @@ const VerifyEmail = () => {
                 }
                 hasVerified.current = true;
 
-                const { success, message } = await api.get('/auth/verify-email', {
+                const response = await api.get('/auth/verify-email', {
                     params: { token }
                 });
+
+                // Extract success and message from the response (axios interceptor already returns data)
+                const { success, message } = response;
 
                 setVerificationStatus({
                     loading: false,
@@ -46,10 +49,11 @@ const VerifyEmail = () => {
                     }, 5000);
                 }
             } catch (error) {
+                console.error('Verification error:', error);
                 setVerificationStatus({
                     loading: false,
                     success: false,
-                    message: error.message || 'Failed to verify email'
+                    message: error.response?.data?.message || error.message || 'Failed to verify email'
                 });
             }
         };

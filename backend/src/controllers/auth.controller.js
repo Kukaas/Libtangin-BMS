@@ -84,12 +84,7 @@ export const registerResident = async (req, res) => {
 
         if (!emailResult.success) {
             console.error("Failed to send verification email:", emailResult.error);
-            // Don't return error to client, continue with registration
         }
-
-        // 7. Generate tokens
-        generateAccessToken(res, user._id);
-        generateRefreshToken(res, user._id);
 
         res.status(201).json({
             success: true,
