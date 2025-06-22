@@ -4,7 +4,7 @@ export { default as Form } from './Form';
 export { default as FormInput } from './FormInput';
 export { default as ResponsiveCard } from './ResponsiveCard';
 export { default as ResponsiveDialog } from './ResponsiveDialog';
-export { default as Residents } from '../../pages/private/secretary/Residents';
+export { default as Residents } from '../../pages/private/secretary/residents-page/Residents';
 export { default as DataTable } from './DataTable';
 export { default as CustomDropdown } from './CustomDropdown';
 export { default as DatePicker } from './DatePicker';

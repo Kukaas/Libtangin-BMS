@@ -10,10 +10,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/private/Dashboard';
-import Residents from './pages/private/secretary/Residents';
-import ResidentsEdit from './pages/private/secretary/ResidentsEdit';
-import ResidentView from './pages/private/secretary/ResidentView';
-import ResidentsCreate from './pages/private/secretary/ResidentsCreate';
+import Residents from './pages/private/secretary/residents-page/Residents';
+import ResidentsEdit from './pages/private/secretary/residents-page/ResidentsEdit';
+import ResidentView from './pages/private/secretary/residents-page/ResidentView';
+import ResidentsCreate from './pages/private/secretary/residents-page/ResidentsCreate';
 import { Toaster } from 'sonner';
 import "./App.css"
 
