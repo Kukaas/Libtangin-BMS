@@ -42,7 +42,7 @@ export const authAPI = {
     },
 };
 
-// Resident search API functions
+// Resident API functions
 export const residentAPI = {
     // Search residents by name
     searchResidents: async (searchParams) => {
@@ -55,6 +55,15 @@ export const residentAPI = {
     getResidentById: async (residentId) => {
         return await api.get(`/auth/resident/${residentId}`);
     },
+    // Get all residents
+    getResidents: async () => {
+        return await api.get('/residents');
+    },
+    // Delete a resident
+    deleteResident: async (residentId) => {
+        return await api.delete(`/residents/${residentId}`);
+    },
+    // NOTE: Add other resident functions (create, update) here as needed.
 };
 
 export default api;

@@ -1,0 +1,164 @@
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+
+/**
+ * StatusBadge - A reusable component for displaying status with appropriate styling
+ *
+ * @param {Object} props
+ * @param {string} props.status - The status text to display
+ * @param {Object} props.statusMap - Optional custom mapping of statuses to styles
+ * @param {string} props.className - Additional classes to apply
+ * @param {React.ReactNode} props.icon - Optional icon to display before status
+ * @param {boolean} props.outline - Whether to use outline style (default: true)
+ * @param {boolean} props.pill - Whether to use pill shape (default: true)
+ */
+const StatusBadge = ({
+    status,
+    statusMap,
+    className,
+    icon: Icon,
+    outline = true,
+    pill = true,
+    ...props
+}) => {
+    const defaultStatusMap = {
+        "For Verification": {
+            bg: outline ? "bg-transparent" : "bg-orange-50 dark:bg-orange-950/30",
+            text: "text-orange-600 dark:text-orange-400",
+            border: "border border-orange-200 dark:border-orange-800",
+            hoverBg: "hover:bg-orange-50 dark:hover:bg-orange-900/20",
+        },
+        "Payment Verified": {
+            bg: outline ? "bg-transparent" : "bg-teal-50 dark:bg-teal-950/30",
+            text: "text-teal-600 dark:text-teal-400",
+            border: "border border-teal-200 dark:border-teal-800",
+            hoverBg: "hover:bg-teal-50 dark:hover:bg-teal-900/20",
+        },
+        Rejected: {
+            bg: outline ? "bg-transparent" : "bg-red-50 dark:bg-red-950/30",
+            text: "text-red-600 dark:text-red-400",
+            border: "border border-red-200 dark:border-red-800",
+            hoverBg: "hover:bg-red-50 dark:hover:bg-red-900/20",
+        },
+        Pending: {
+            bg: outline ? "bg-transparent" : "bg-yellow-50 dark:bg-yellow-950/30",
+            text: "text-yellow-600 dark:text-yellow-400",
+            border: "border border-yellow-200 dark:border-yellow-800",
+            hoverBg: "hover:bg-yellow-50 dark:hover:bg-yellow-900/20",
+        },
+        Approved: {
+            bg: outline ? "bg-transparent" : "bg-blue-50 dark:bg-blue-950/30",
+            text: "text-blue-600 dark:text-blue-400",
+            border: "border border-blue-200 dark:border-blue-800",
+            hoverBg: "hover:bg-blue-50 dark:hover:bg-blue-900/20",
+        },
+        Measured: {
+            bg: outline ? "bg-transparent" : "bg-purple-50 dark:bg-purple-950/30",
+            text: "text-purple-600 dark:text-purple-400",
+            border: "border border-purple-200 dark:border-purple-800",
+            hoverBg: "hover:bg-purple-50 dark:hover:bg-purple-900/20",
+        },
+        "For Pickup": {
+            bg: outline ? "bg-transparent" : "bg-indigo-50 dark:bg-indigo-950/30",
+            text: "text-indigo-600 dark:text-indigo-400",
+            border: "border border-indigo-200 dark:border-indigo-800",
+            hoverBg: "hover:bg-indigo-50 dark:hover:bg-indigo-900/20",
+        },
+        Claimed: {
+            bg: outline ? "bg-transparent" : "bg-green-50 dark:bg-green-950/30",
+            text: "text-green-600 dark:text-green-400",
+            border: "border border-green-200 dark:border-green-800",
+            hoverBg: "hover:bg-green-50 dark:hover:bg-green-900/20",
+        },
+        Verified: {
+            bg: outline ? "bg-transparent" : "bg-lime-50 dark:bg-lime-950/30",
+            text: "text-lime-600 dark:text-lime-400",
+            border: "border border-lime-200 dark:border-lime-800",
+            hoverBg: "hover:bg-lime-50 dark:hover:bg-lime-900/20",
+        },
+        Available: {
+            bg: outline ? "bg-transparent" : "bg-green-50 dark:bg-green-950/30",
+            text: "text-green-600 dark:text-green-400",
+            border: "border border-green-200 dark:border-green-800",
+            hoverBg: "hover:bg-green-50 dark:hover:bg-green-900/20",
+        },
+        "Low Stock": {
+            bg: outline ? "bg-transparent" : "bg-amber-50 dark:bg-amber-950/30",
+            text: "text-amber-600 dark:text-amber-400",
+            border: "border border-amber-200 dark:border-amber-800",
+            hoverBg: "hover:bg-amber-50 dark:hover:bg-amber-900/20",
+        },
+        "Out of Stock": {
+            bg: outline ? "bg-transparent" : "bg-red-50 dark:bg-red-950/30",
+            text: "text-red-600 dark:text-red-400",
+            border: "border border-red-200 dark:border-red-800",
+            hoverBg: "hover:bg-red-50 dark:hover:bg-red-900/20",
+        },
+        Active: {
+            bg: outline ? "bg-transparent" : "bg-green-50 dark:bg-green-950/30",
+            text: "text-green-600 dark:text-green-400",
+            border: "border border-green-200 dark:border-green-800",
+            hoverBg: "hover:bg-green-50 dark:hover:bg-green-900/20",
+        },
+        Inactive: {
+            bg: outline ? "bg-transparent" : "bg-gray-50 dark:bg-gray-800/30",
+            text: "text-gray-600 dark:text-gray-400",
+            border: "border border-gray-200 dark:border-gray-700",
+            hoverBg: "hover:bg-gray-50 dark:hover:bg-gray-800/50",
+        },
+        Completed: {
+            bg: outline ? "bg-transparent" : "bg-green-50 dark:bg-green-950/30",
+            text: "text-green-600 dark:text-green-400",
+            border: "border border-green-200 dark:border-green-800",
+            hoverBg: "hover:bg-green-50 dark:hover:bg-green-900/20",
+        },
+        Cancelled: {
+            bg: outline ? "bg-transparent" : "bg-red-50 dark:bg-red-950/30",
+            text: "text-red-600 dark:text-red-400",
+            border: "border border-red-200 dark:border-red-800",
+            hoverBg: "hover:bg-red-50 dark:hover:bg-red-900/20",
+        },
+        Critical: {
+            bg: outline ? "bg-transparent" : "bg-red-50 dark:bg-red-950/30",
+            text: "text-red-600 dark:text-red-400",
+            border: "border border-red-200 dark:border-red-800",
+            hoverBg: "hover:bg-red-50 dark:hover:bg-red-900/20",
+        },
+        "In Stock": {
+            bg: outline ? "bg-transparent" : "bg-green-50 dark:bg-green-950/30",
+            text: "text-green-600 dark:text-green-400",
+            border: "border border-green-200 dark:border-green-800",
+            hoverBg: "hover:bg-green-50 dark:hover:bg-green-900/20",
+        },
+    };
+
+    const styleMap = statusMap || defaultStatusMap;
+    const style = styleMap[status] || {
+        bg: outline ? "bg-transparent" : "bg-gray-50 dark:bg-gray-800/30",
+        text: "text-gray-600 dark:text-gray-400",
+        border: "border border-gray-200 dark:border-gray-700",
+        hoverBg: "hover:bg-gray-50 dark:hover:bg-gray-800/50",
+    };
+
+    return (
+        <Badge
+            className={cn(
+                "font-medium capitalize transition-colors",
+                style.bg,
+                style.text,
+                style.border,
+                style.hoverBg,
+                pill ? "rounded-full px-3" : "rounded",
+                Icon ? "pl-2 pr-3" : "px-3",
+                className
+            )}
+            variant="outline"
+            {...props}
+        >
+            {Icon && <Icon className={cn("mr-1 h-3.5 w-3.5 -ml-0.5", style.text)} />}
+            {status}
+        </Badge>
+    );
+};
+
+export default StatusBadge;

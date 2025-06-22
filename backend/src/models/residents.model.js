@@ -42,6 +42,11 @@ const residentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    status: {
+        type: String,
+        enum: ['active', 'inactive', 'pending'],
+        default: 'pending'
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

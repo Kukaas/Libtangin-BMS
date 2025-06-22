@@ -98,3 +98,12 @@ export const authorize = (...roles) => {
         next();
     };
 };
+
+export const secretaryOrAdmin = (req, res, next) => {
+    const userRole = req.user?.role;
+    if (userRole === 'secretary' || userRole === 'admin') {
+        next();
+    } else {
+        return res.status(403).json({ error: "Forbidden. Access is restricted to Secretaries and Admins." });
+    }
+};

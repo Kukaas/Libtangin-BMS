@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/private/Dashboard';
+import Residents from './pages/private/secretary/Residents';
 import { Toaster } from 'sonner';
 import "./App.css"
 
@@ -42,6 +43,13 @@ function App() {
           <Route path="/dashboard" element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          } />
+
+          {/* Secretary routes */}
+          <Route path="/secretary/residents" element={
+            <PrivateRoute>
+              <Residents />
             </PrivateRoute>
           } />
         </Routes>

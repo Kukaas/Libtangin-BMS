@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import { ENV } from "./config/env.js";
 import authRoutes from "./routes/auth.routes.js"
+import residentRoutes from "./routes/resident.routes.js"
 
 const app = express();
 
@@ -26,5 +27,6 @@ app.listen(ENV.PORT, () => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/residents", residentRoutes)
 
 export default app;
