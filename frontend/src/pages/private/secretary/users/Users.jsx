@@ -36,19 +36,22 @@ function Users() {
         return String(value);
     };
 
+    // Only show users with role 'resident'
+    const residentUsers = React.useMemo(() => (users || []).filter(user => user.role === 'resident'), [users]);
+
     // Custom DataTable wrapper to clear filters
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [filteredUsers, setFilteredUsers] = React.useState(users);
+    const [filteredUsers, setFilteredUsers] = React.useState(residentUsers);
 
     React.useEffect(() => {
         if (!searchQuery) {
-            setFilteredUsers(users);
+            setFilteredUsers(residentUsers);
         } else {
-            setFilteredUsers((users || []).filter(user =>
+            setFilteredUsers((residentUsers || []).filter(user =>
                 Object.values(user).some(val => safeString(val).toLowerCase().includes(searchQuery.toLowerCase()))
             ));
         }
-    }, [users, searchQuery]);
+    }, [residentUsers, searchQuery]);
 
     const getDisplayName = (user) =>
         user.resident
