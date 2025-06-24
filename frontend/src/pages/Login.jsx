@@ -72,24 +72,27 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
-
+        setErrors({});
         setIsLoading(true);
-
         try {
-            await login(formData);
-            toast.success('Login successful!');
-
-            // Redirect to the page they were trying to access, or dashboard
-            const from = location.state?.from?.pathname || '/dashboard';
-            navigate(from, { replace: true });
-        } catch (error) {
-            console.error('Login error:', error);
+            const user = await login(formData);
+            // Role-based redirect
+            if (user.role === 'admin') {
+                navigate('/dashboard', { replace: true });
+            } else if (user.role === 'secretary') {
+                navigate('/dashboard', { replace: true });
+            } else if (user.role === 'treasurer') {
+                navigate('/dashboard', { replace: true });
+            } else if (user.role === 'barangay_captain') {
+                navigate('/dashboard', { replace: true });
+            } else if (user.role === 'resident') {
+                navigate('/dashboard', { replace: true });
+            } else {
+                navigate('/', { replace: true });
+            }
+        } catch (err) {
             setErrors({
-                email: error.message || 'Invalid email or password'
+                email: err.message || 'Login failed'
             });
         } finally {
             setIsLoading(false);
