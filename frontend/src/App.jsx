@@ -18,6 +18,7 @@ import { Toaster } from 'sonner';
 import "./App.css"
 import { Users } from './pages/private/secretary';
 import UserView from './pages/private/secretary/users/UserView';
+import { OfficialsAccounts, OfficialsCreate, OfficialsEdit, OfficialView } from './pages/admin/officials-accounts';
 
 function App() {
   return (
@@ -81,6 +82,28 @@ function App() {
           <Route path="/secretary/users/:id/view" element={
             <PrivateRoute>
               <UserView />
+            </PrivateRoute>
+          } />
+
+          {/* Admin routes for officials accounts */}
+          <Route path="/admin/officials-accounts" element={
+            <PrivateRoute>
+              <OfficialsAccounts />
+            </PrivateRoute>
+          } />
+          <Route path="/admin/officials-accounts/create" element={
+            <PrivateRoute>
+              <OfficialsCreate />
+            </PrivateRoute>
+          } />
+          <Route path="/admin/officials-accounts/:id/edit" element={
+            <PrivateRoute>
+              <OfficialsEdit />
+            </PrivateRoute>
+          } />
+          <Route path="/admin/officials-accounts/:id/view" element={
+            <PrivateRoute>
+              <OfficialView />
             </PrivateRoute>
           } />
         </Routes>

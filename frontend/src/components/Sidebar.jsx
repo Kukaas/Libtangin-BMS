@@ -40,6 +40,7 @@ const getSidebarLinks = (userRole) => {
             return [
                 ...baseLinks,
                 { to: '/admin/users', label: 'Users Management', icon: Users },
+                { to: '/admin/officials-accounts', label: 'Officials Accounts', icon: Users },
                 { to: '/admin/transactions', label: 'Recent Transactions', icon: History },
                 { to: '/admin/system-health', label: 'System Health', icon: Heart },
                 { to: '/admin/events', label: 'Events', icon: Calendar },

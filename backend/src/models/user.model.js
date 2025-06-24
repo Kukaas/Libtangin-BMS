@@ -72,6 +72,10 @@ const userSchema = new mongoose.Schema({
     },
 }, { timestamps: true })
 
+userSchema.statics.getOfficials = function () {
+    return this.find({ role: { $in: ['secretary', 'treasurer', 'barangay_captain'] } });
+};
+
 const User = mongoose.model("User", userSchema);
 
 export default User;

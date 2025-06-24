@@ -54,4 +54,11 @@ export const fetchUsers = () => api.get('/users');
 export const fetchUserById = (userId) => api.get(`/users/${userId}`);
 export const verifyUserDocument = (userId) => api.patch(`/users/${userId}/verify-document`);
 
+// Officials API functions for admin
+export const fetchOfficials = () => api.get('/users/officials');
+export const fetchOfficialById = (id) => api.get(`/users/officials/${id}`);
+export const createOfficial = (data) => api.post('/users/officials', data);
+export const updateOfficial = (id, data) => api.put(`/users/officials/${id}`, data);
+export const deleteOfficial = (id) => api.delete(`/users/officials/${id}`);
+
 export default api;
