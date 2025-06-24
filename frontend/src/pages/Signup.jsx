@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { residentAPI, authAPI } from '../services/api';
 import { toast } from 'sonner';
+import { CustomImageUpload } from '../components/custom';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -31,6 +32,11 @@ const Signup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [documentType, setDocumentType] = useState('');
+    const [idFront, setIdFront] = useState('');
+    const [idBack, setIdBack] = useState('');
+    const [birthCertificate, setBirthCertificate] = useState('');
+    const [docError, setDocError] = useState('');
 
     // Debounced search effect
     useEffect(() => {
@@ -87,6 +93,24 @@ const Signup = () => {
         setSelectedResident(null);
     };
 
+    const handleDocumentTypeChange = (e) => {
+        setDocumentType(e.target.value);
+        setIdFront('');
+        setIdBack('');
+        setBirthCertificate('');
+        setDocError('');
+    };
+
+    const handleFileChange = async (e, setter) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setter(reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
     const validateForm = () => {
         const { email, password, confirmPassword } = formData;
 
@@ -105,6 +129,20 @@ const Signup = () => {
         try {
             signupSchema.parse({ email, password, confirmPassword });
             setErrors({});
+            // Document validation
+            if (!documentType) {
+                setDocError('Please select a document type.');
+                return false;
+            }
+            if (documentType === 'id' && (!idFront || !idBack)) {
+                setDocError('Please upload both front and back of your ID.');
+                return false;
+            }
+            if (documentType === 'birth_certificate' && !birthCertificate) {
+                setDocError('Please upload your birth certificate.');
+                return false;
+            }
+            setDocError('');
             return true;
         } catch (error) {
             const newErrors = {};
@@ -137,6 +175,10 @@ const Signup = () => {
                 residentId: selectedResident._id,
                 email: formData.email,
                 password: formData.password,
+                documentType,
+                idFront: documentType === 'id' ? idFront : undefined,
+                idBack: documentType === 'id' ? idBack : undefined,
+                birthCertificate: documentType === 'birth_certificate' ? birthCertificate : undefined,
             });
             toast.success("Please verify your email")
             navigate('/login', { state: { fromSignup: true } });
@@ -297,6 +339,46 @@ const Signup = () => {
                                     </li>
                                 </ul>
                             </div>
+
+                            {/* Document Upload */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Upload Document</label>
+                                <select
+                                    className="w-full border rounded-lg px-4 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500 border-slate-300"
+                                    value={documentType}
+                                    onChange={handleDocumentTypeChange}
+                                >
+                                    <option value="">Select document type</option>
+                                    <option value="id">Government ID (Front & Back)</option>
+                                    <option value="birth_certificate">Birth Certificate</option>
+                                </select>
+                                {documentType === 'id' && (
+                                    <div className="flex flex-col gap-4 md:flex-row md:gap-8">
+                                        <CustomImageUpload
+                                            label="ID Front"
+                                            value={idFront}
+                                            onChange={setIdFront}
+                                            error={docError && !idFront ? docError : ''}
+                                        />
+                                        <CustomImageUpload
+                                            label="ID Back"
+                                            value={idBack}
+                                            onChange={setIdBack}
+                                            error={docError && !idBack ? docError : ''}
+                                        />
+                                    </div>
+                                )}
+                                {documentType === 'birth_certificate' && (
+                                    <CustomImageUpload
+                                        label="Birth Certificate"
+                                        value={birthCertificate}
+                                        onChange={setBirthCertificate}
+                                        error={docError}
+                                    />
+                                )}
+                                {docError && <p className="text-sm text-red-600 mt-1">{docError}</p>}
+                            </div>
+
                             <Button
                                 type="submit"
                                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"

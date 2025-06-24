@@ -85,7 +85,7 @@ const seedAll = async () => {
 
         // Seed residents
         console.log("Seeding residents...");
-        await Resident.insertMany(residents);
+        const createdResidents = await Resident.insertMany(residents);
         console.log(`✅ ${residents.length} residents seeded successfully!`);
 
         // Hash passwords and prepare admin users for insertion

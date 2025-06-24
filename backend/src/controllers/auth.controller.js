@@ -53,6 +53,15 @@ export const registerResident = async (req, res) => {
         // 4. Create user
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Document upload
+        const { documentType, idFront, idBack, birthCertificate } = req.body;
+        if (!documentType || (documentType === 'id' && (!idFront || !idBack)) || (documentType === 'birth_certificate' && !birthCertificate)) {
+            return res.status(400).json({
+                success: false,
+                message: "Document upload is required. Please provide the correct document(s)."
+            });
+        }
+
         // Generate email verification token
         const emailVerificationToken = crypto.randomBytes(32).toString("hex");
 
@@ -60,14 +69,17 @@ export const registerResident = async (req, res) => {
         const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
         const user = await User.create({
-            firstName: resident.firstName,
-            middleName: resident.middleName,
-            lastName: resident.lastName,
+            residentId: resident._id,
             email,
             password: hashedPassword,
             role: "resident",
             emailVerificationToken,
             emailVerificationTokenExpires,
+            documentType,
+            idFront: documentType === 'id' ? idFront : undefined,
+            idBack: documentType === 'id' ? idBack : undefined,
+            birthCertificate: documentType === 'birth_certificate' ? birthCertificate : undefined,
+            documentVerified: false,
         });
 
         // 5. Link user to resident
@@ -91,11 +103,9 @@ export const registerResident = async (req, res) => {
             message: "Registration successful! Please check your email to verify your account.",
             user: {
                 _id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                residentId: resident._id,
                 email: user.email,
                 role: user.role,
-                residentId: resident._id,
             }
         });
     } catch (error) {

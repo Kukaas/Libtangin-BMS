@@ -77,4 +77,17 @@ export const residentAPI = {
     },
 };
 
+// User API functions
+export const userAPI = {
+    getUsers: async () => {
+        return await api.get('/users');
+    },
+    getUserById: async (userId) => {
+        return await api.get(`/users/${userId}`);
+    },
+    verifyUserDocument: async (userId) => {
+        return await api.patch(`/users/${userId}/verify-document`);
+    },
+};
+
 export default api;

@@ -5,6 +5,8 @@ import { residentAPI } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import Section from '@/components/custom/Section';
+import Detail from '@/components/custom/Detail';
 
 function ResidentView() {
     const { id } = useParams();
@@ -92,32 +94,6 @@ function ResidentView() {
                 </div>
             ) : null}
         </PageLayout>
-    );
-}
-
-function Section({ title, children }) {
-    return (
-        <section className="flex flex-col gap-4 pl-2 sm:pl-4 border-l-4 border-primary bg-white/80 rounded-xl py-4">
-            <div className="flex items-center gap-2 mb-2">
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-primary"></span>
-                <h2 className="text-base font-semibold text-foreground/90 tracking-wide uppercase">{title}</h2>
-            </div>
-            {children}
-        </section>
-    );
-}
-
-function Detail({ label, value, deceased }) {
-    return (
-        <div className="flex flex-col gap-1 py-1 w-full">
-            <span className="text-xs text-muted-foreground font-medium mb-0.5 tracking-wide">{label}</span>
-            <span className="text-base font-normal text-foreground/90 break-all flex items-center gap-2">
-                {value ? value : <span className="text-muted-foreground">—</span>}
-                {deceased && (
-                    <span className="inline-block px-2 py-0.5 text-xs rounded bg-destructive/10 text-destructive border border-destructive/30 ml-2">Deceased</span>
-                )}
-            </span>
-        </div>
     );
 }
 

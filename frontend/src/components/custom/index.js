@@ -9,4 +9,5 @@ export { default as DataTable } from './DataTable';
 export { default as CustomDropdown } from './CustomDropdown';
 export { default as DatePicker } from './DatePicker';
 export { default as CustomSelect } from './CustomSelect';
+export { default as CustomImageUpload } from './CustomImageUpload';
 

@@ -1,16 +1,19 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
+    residentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Resident',
+        required: function () { return this.role === 'resident'; },
+    },
     firstName: {
         type: String,
-        required: true,
     },
     middleName: {
         type: String,
     },
     lastName: {
         type: String,
-        required: true,
     },
     email: {
         type: String,
@@ -49,8 +52,25 @@ const userSchema = new mongoose.Schema({
     passwordResetCodeExpires: {
         type: Date,
     },
+    // Document upload fields
+    documentType: {
+        type: String, // 'id' or 'birth_certificate'
+        enum: ['id', 'birth_certificate'],
+    },
+    idFront: {
+        type: String,
+    },
+    idBack: {
+        type: String,
+    },
+    birthCertificate: {
+        type: String,
+    },
+    documentVerified: {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true })
-
 
 const User = mongoose.model("User", userSchema);
 

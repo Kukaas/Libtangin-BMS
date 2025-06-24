@@ -16,6 +16,8 @@ import ResidentView from './pages/private/secretary/residents-page/ResidentView'
 import ResidentsCreate from './pages/private/secretary/residents-page/ResidentsCreate';
 import { Toaster } from 'sonner';
 import "./App.css"
+import { Users } from './pages/private/secretary';
+import UserView from './pages/private/secretary/users/UserView';
 
 function App() {
   return (
@@ -68,6 +70,17 @@ function App() {
           <Route path="/secretary/residents/:id/view" element={
             <PrivateRoute>
               <ResidentView />
+            </PrivateRoute>
+          } />
+          <Route path="/secretary/users" element={
+            <PrivateRoute>
+              <Users />
+            </PrivateRoute>
+          } />
+          {/* Optionally, add a user view page for details in the future */}
+          <Route path="/secretary/users/:id/view" element={
+            <PrivateRoute>
+              <UserView />
             </PrivateRoute>
           } />
         </Routes>
