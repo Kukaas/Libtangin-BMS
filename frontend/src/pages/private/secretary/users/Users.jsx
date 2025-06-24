@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { userAPI } from '@/services/api';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchUsers } from '@/services/api';
 import PageLayout from '@/layout/PageLayout';
 import { DataTable } from '@/components/custom';
 import ResponsiveCard from '@/components/custom/ResponsiveCard';
@@ -11,21 +12,14 @@ import { CheckCircle, Eye } from 'lucide-react';
 import { CustomDropdown } from '@/components/custom';
 
 function Users() {
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [view, setView] = useState('table'); // 'table' or 'card'
     const navigate = useNavigate();
-
-    useEffect(() => {
-        setLoading(true);
-        userAPI.getUsers()
-            .then(res => {
-                setUsers(res);
-            })
-            .catch(err => setError(err?.response?.data?.error || 'Failed to fetch users'))
-            .finally(() => setLoading(false));
-    }, []);
+    const { data: users = [], isLoading, error } = useQuery({
+        queryKey: ['users'],
+        queryFn: fetchUsers,
+        select: (res) => Array.isArray(res) ? res : res?.data || [],
+        staleTime: 5 * 60 * 1000,
+    });
 
     const handleView = (id) => {
         navigate(`/secretary/users/${id}/view`);
@@ -43,14 +37,14 @@ function Users() {
     };
 
     // Custom DataTable wrapper to clear filters
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredUsers, setFilteredUsers] = useState(users.data || []);
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [filteredUsers, setFilteredUsers] = React.useState(users);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (!searchQuery) {
-            setFilteredUsers(users.data || []);
+            setFilteredUsers(users);
         } else {
-            setFilteredUsers((users.data || []).filter(user =>
+            setFilteredUsers((users || []).filter(user =>
                 Object.values(user).some(val => safeString(val).toLowerCase().includes(searchQuery.toLowerCase()))
             ));
         }
@@ -117,7 +111,7 @@ function Users() {
             subtitle="Manage and verify all users."
             breadcrumbs={[{ label: 'Users' }]}
         >
-            {loading ? (
+            {isLoading ? (
                 <div className="text-center py-10 text-muted-foreground">Loading users...</div>
             ) : error ? (
                 <div className="text-center py-10 text-destructive">{error}</div>

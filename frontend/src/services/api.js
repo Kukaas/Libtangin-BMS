@@ -42,52 +42,16 @@ export const authAPI = {
     },
 };
 
-// Resident API functions
-export const residentAPI = {
-    // Search residents by name
-    searchResidents: async (searchParams) => {
-        return await api.get('/auth/search-residents', {
-            params: searchParams
-        });
-    },
+// Resident API functions for TanStack Query
+export const fetchResidents = () => api.get('/residents');
+export const fetchResidentById = (residentId) => api.get(`/residents/${residentId}`);
+export const createResident = (data) => api.post('/residents', data);
+export const updateResident = (residentId, data) => api.put(`/residents/${residentId}`, data);
+export const deleteResident = (residentId) => api.delete(`/residents/${residentId}`);
 
-    // Get all residents
-    getResidents: async () => {
-        return await api.get('/residents');
-    },
-
-    // Get resident by ID
-    getResidentById: async (residentId) => {
-        return await api.get(`/residents/${residentId}`);
-    },
-
-    // Create a resident
-    createResident: async (data) => {
-        return await api.post('/residents', data);
-    },
-
-    // Update a resident
-    updateResident: async (residentId, data) => {
-        return await api.put(`/residents/${residentId}`, data);
-    },
-
-    // Delete a resident
-    deleteResident: async (residentId) => {
-        return await api.delete(`/residents/${residentId}`);
-    },
-};
-
-// User API functions
-export const userAPI = {
-    getUsers: async () => {
-        return await api.get('/users');
-    },
-    getUserById: async (userId) => {
-        return await api.get(`/users/${userId}`);
-    },
-    verifyUserDocument: async (userId) => {
-        return await api.patch(`/users/${userId}/verify-document`);
-    },
-};
+// User API functions for TanStack Query
+export const fetchUsers = () => api.get('/users');
+export const fetchUserById = (userId) => api.get(`/users/${userId}`);
+export const verifyUserDocument = (userId) => api.patch(`/users/${userId}/verify-document`);
 
 export default api;

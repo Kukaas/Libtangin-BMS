@@ -1,33 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { residentAPI } from '@/services/api';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchResidents } from '@/services/api';
 import PageLayout from '@/layout/PageLayout';
 import { DataTable } from '@/components/custom';
 import ResponsiveCard from '@/components/custom/ResponsiveCard';
-import { formatDateLong, formatStatus } from '@/lib/utils';
-import StatusBadge from '@/components/custom/StatusBadge';
+import { formatDateLong } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Plus, Download } from 'lucide-react';
 import { CustomDropdown } from '@/components/custom';
 import { Pencil } from 'lucide-react';
 
 function Residents() {
-    const [residents, setResidents] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [view, setView] = useState('table'); // 'table' or 'card'
     const navigate = useNavigate();
-
-    useEffect(() => {
-        setLoading(true);
-        residentAPI.getResidents()
-            .then(res => {
-                setResidents(Array.isArray(res) ? res : []);
-            })
-            .catch(err => setError(err?.response?.data?.error || 'Failed to fetch residents'))
-            .finally(() => setLoading(false));
-    }, []);
+    const { data: residents = [], isLoading, error } = useQuery({
+        queryKey: ['residents'],
+        queryFn: fetchResidents,
+        select: (res) => Array.isArray(res) ? res : res?.data || [],
+        staleTime: 5 * 60 * 1000,
+    });
 
     const handleEdit = (id) => {
         navigate(`/secretary/residents/${id}/edit`);
@@ -43,7 +35,6 @@ function Residents() {
 
     const handleExport = () => {
         // Placeholder for export logic
-        // You can implement CSV export or similar here
     };
 
     const columns = [
@@ -89,10 +80,10 @@ function Residents() {
                 </div>
             }
         >
-            {loading ? (
+            {isLoading ? (
                 <div className="text-center py-10 text-muted-foreground">Loading residents...</div>
             ) : error ? (
-                <div className="text-center py-10 text-destructive">{error}</div>
+                <div className="text-center py-10 text-destructive">{error.message || 'Failed to fetch residents'}</div>
             ) : view === 'table' ? (
                 <DataTable columns={columns} data={residents} />
             ) : (

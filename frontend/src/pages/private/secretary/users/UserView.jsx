@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import PageLayout from '@/layout/PageLayout';
-import { userAPI } from '@/services/api';
+import { fetchUserById, verifyUserDocument } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
@@ -15,23 +16,19 @@ function UserView() {
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [verifying, setVerifying] = useState(false);
     const [imageModal, setImageModal] = useState({ open: false, src: '', alt: '', caption: '' });
     const documentsRef = useRef(null);
 
-    useEffect(() => {
-        setLoading(true);
-        userAPI.getUserById(id)
-            .then(res => setUser(res.data || null))
-            .catch(() => setError('Failed to fetch user'))
-            .finally(() => setLoading(false));
-    }, [id]);
+    const { data: user, isLoading, error, refetch } = useQuery({
+        queryKey: ['user', id],
+        queryFn: () => fetchUserById(id),
+        select: (res) => res?.data || res,
+        staleTime: 5 * 60 * 1000,
+    });
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (location.state && location.state.openVerify && documentsRef.current) {
             documentsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -39,8 +36,8 @@ function UserView() {
 
     const handleVerify = async () => {
         setVerifying(true);
-        await userAPI.verifyUserDocument(id);
-        setUser(u => ({ ...u, documentVerified: true }));
+        await verifyUserDocument(id);
+        refetch();
         setVerifying(false);
         setConfirmOpen(false);
     };
@@ -60,8 +57,8 @@ function UserView() {
             ]}
         >
             {error ? (
-                <div className="text-center py-10 text-destructive">{error}</div>
-            ) : loading ? (
+                <div className="text-center py-10 text-destructive">{error.message || 'Failed to fetch user'}</div>
+            ) : isLoading ? (
                 <div className="max-w-3xl mx-auto grid gap-4 p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[...Array(10)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}

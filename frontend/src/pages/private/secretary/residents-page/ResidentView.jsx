@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import PageLayout from '@/layout/PageLayout';
-import { residentAPI } from '@/services/api';
+import { fetchResidentById } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
@@ -11,17 +12,12 @@ import Detail from '@/components/custom/Detail';
 function ResidentView() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [resident, setResident] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        setLoading(true);
-        residentAPI.getResidentById(id)
-            .then(res => setResident(res))
-            .catch(() => setError('Failed to fetch resident'))
-            .finally(() => setLoading(false));
-    }, [id]);
+    const { data: resident, isLoading, error } = useQuery({
+        queryKey: ['resident', id],
+        queryFn: () => fetchResidentById(id),
+        select: (res) => res?.data || res,
+        staleTime: 5 * 60 * 1000,
+    });
 
     // Helper for avatar initials
     const getInitials = (first, last) => {
@@ -39,8 +35,8 @@ function ResidentView() {
             ]}
         >
             {error ? (
-                <div className="text-center py-10 text-destructive">{error}</div>
-            ) : loading ? (
+                <div className="text-center py-10 text-destructive">{error.message || 'Failed to fetch resident'}</div>
+            ) : isLoading ? (
                 <div className="max-w-3xl mx-auto grid gap-4 p-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[...Array(10)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}

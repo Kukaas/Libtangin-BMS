@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import PageLayout from '@/layout/PageLayout';
-import { residentAPI } from '@/services/api';
+import { createResident } from '@/services/api';
 import { Form, FormInput, DatePicker, CustomSelect } from '@/components/custom';
 import { Button } from '@/components/ui/button';
 import { differenceInYears, isValid } from 'date-fns';
@@ -10,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 function ResidentsCreate() {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [resident, setResident] = useState({
         firstName: '',
         middleName: '',
@@ -26,8 +28,18 @@ function ResidentsCreate() {
             mother: { name: '', occupation: '', contactNumber: '' },
         },
     });
-    const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
+
+    const mutation = useMutation({
+        mutationFn: createResident,
+        onSuccess: () => {
+            queryClient.invalidateQueries(['residents']);
+            navigate('/secretary/residents');
+        },
+        onError: (err) => {
+            setError(err?.message || err?.error || 'Failed to create resident');
+        },
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -47,18 +59,10 @@ function ResidentsCreate() {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setSaving(true);
         setError(null);
-        try {
-            await residentAPI.createResident(resident);
-            navigate('/secretary/residents');
-        } catch (err) {
-            setError(err?.message || err?.error || 'Failed to create resident');
-        } finally {
-            setSaving(false);
-        }
+        mutation.mutate(resident);
     };
 
     const handleBirthDateChange = (date) => {
@@ -165,7 +169,7 @@ function ResidentsCreate() {
                     </section>
                     <div className="flex justify-end gap-2 mt-4">
                         <Button type="button" variant="secondary" onClick={() => navigate('/secretary/residents')}>Cancel</Button>
-                        <Button type="submit" disabled={saving}>{saving ? 'Saving...' : 'Create Resident'}</Button>
+                        <Button type="submit" disabled={mutation.isPending}>{mutation.isPending ? 'Saving...' : 'Create Resident'}</Button>
                     </div>
                 </Form>
             </ScrollArea>

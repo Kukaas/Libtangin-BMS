@@ -10,7 +10,7 @@ import { signupSchema } from '../lib/validation';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { residentAPI, authAPI } from '../services/api';
+import { authAPI, fetchResidents } from '../services/api';
 import { toast } from 'sonner';
 import { CustomImageUpload } from '../components/custom';
 
@@ -63,8 +63,12 @@ const Signup = () => {
         setResidentSearchLoading(true);
         setHasSearched(true);
         try {
-            const res = await residentAPI.searchResidents({ firstName: query });
-            setResidentOptions(res.data || []);
+            const res = await fetchResidents();
+            // Filter by firstName (case-insensitive, partial match)
+            const filtered = (res.data || res || []).filter(r =>
+                r.firstName && r.firstName.toLowerCase().includes(query.toLowerCase())
+            );
+            setResidentOptions(filtered);
         } catch (e) {
             setResidentOptions([]);
         } finally {
