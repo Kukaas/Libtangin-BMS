@@ -29,6 +29,17 @@ const Header = () => {
         navigate('/login');
     };
 
+    const handleDashboard = () => {
+        if (!user) return;
+        if (user.role === 'admin' || user.role === 'treasurer' || user.role === 'barangay_captain' || user.role === 'resident') {
+            navigate('/dashboard');
+        } else if (user.role === 'secretary') {
+            navigate('/dashboard');
+        } else {
+            navigate('/dashboard');
+        }
+    };
+
     return (
         <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-50">
             <div className="container mx-auto px-4 py-4">
@@ -59,6 +70,9 @@ const Header = () => {
                                         <UserIcon className="w-5 h-5" />
                                         <span>{user?.firstName || user?.email}</span>
                                     </div>
+                                    <Button variant="secondary" onClick={handleDashboard}>
+                                        Dashboard
+                                    </Button>
                                     <Button variant="outline" onClick={handleLogout}>
                                         <LogOut className="w-4 h-4 mr-1" /> Logout
                                     </Button>
@@ -104,6 +118,9 @@ const Header = () => {
                                 <div className="pt-2 space-y-2">
                                     {isAuthenticated ? (
                                         <>
+                                            <Button variant="secondary" className="w-full" onClick={() => { handleDashboard(); closeMenu(); }}>
+                                                Dashboard
+                                            </Button>
                                             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 text-blue-900 font-medium">
                                                 <UserIcon className="w-5 h-5" />
                                                 <span>{user?.firstName || user?.email}</span>

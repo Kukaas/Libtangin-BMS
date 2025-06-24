@@ -19,6 +19,7 @@ import "./App.css"
 import { Users } from './pages/private/secretary';
 import UserView from './pages/private/secretary/users/UserView';
 import { OfficialsAccounts, OfficialsCreate, OfficialsEdit, OfficialView } from './pages/admin/officials-accounts';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -106,6 +107,7 @@ function App() {
               <OfficialView />
             </PrivateRoute>
           } />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster position='top-right' richColors closeButton />
       </Router>
